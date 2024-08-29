@@ -31,8 +31,8 @@ def run(context):
         
         csvTargetFilePath="{}/{}-PARAMS.csv".format(outputFolderPath,app.activeDocument.name)
 
-        app.log("Dumping to: {}".format(csvTargetFilePath))
-        
+        app.log("Dump file: {}".format(csvTargetFilePath))
+
         # Get favourited paramaters and make headers list
         favParams=[]
         headersList=["Part Name", "Part Number", "Description"]
@@ -41,6 +41,12 @@ def run(context):
             if p.isFavorite:
                 favParams.append(p.name)
                 headersList.append(p.name)
+
+        # Check if there any parameters favourited and return if not.
+        if len(favParams) == 0:
+            app.log("Error: No Favourited Parameters")
+            ui.messageBox("You haven't favourited any parameters. Nothing to export. Stopping.", "Error: No Favourites")
+            return  
 
         topTable=design.configurationTopTable
 
