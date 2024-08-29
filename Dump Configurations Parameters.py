@@ -35,7 +35,7 @@ def run(context):
         
         # Get favourited paramaters and make headers list
         favParams=[]
-        headersList=["partName", "partNumber", "description"]
+        headersList=["Part Name", "Part Number", "Description"]
 
         for p in design.allParameters:
             if p.isFavorite:
@@ -62,9 +62,9 @@ def run(context):
             confRow.activate()
 
             rowFParams={}
-            rowFParams["partName"] = confRow.name
-            rowFParams["partNumber"] = confRow.getCellByColumnId(partNumberCOLID).value
-            rowFParams["description"] = confRow.getCellByColumnId(descriptionCOLID).value
+            rowFParams["Part Name"] = confRow.name
+            rowFParams["Part Number"] = confRow.getCellByColumnId(partNumberCOLID).value
+            rowFParams["Description"] = confRow.getCellByColumnId(descriptionCOLID).value
 
             for pName in favParams:
                 rowFParams[pName]=adsk.fusion.Parameter.cast(design.allParameters.itemByName(pName)).value
