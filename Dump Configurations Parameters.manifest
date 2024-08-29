@@ -1,0 +1,10 @@
+{
+	"autodeskProduct":	"Fusion",
+	"type":	"script",
+	"author":	"Donutnz",
+	"description":	{
+		"":	"Dumps parameters from each configuration as a CSV."
+	},
+	"supportedOS":	"windows|mac",
+	"editEnabled":	true
+}
