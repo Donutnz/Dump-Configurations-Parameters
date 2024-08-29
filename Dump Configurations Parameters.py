@@ -10,9 +10,10 @@ def run(context):
         app = adsk.core.Application.get()
         ui  = app.userInterface
 
-
         design=adsk.fusion.Design.cast(app.activeProduct)
 
+        app.log("Params Dump Script Started...")
+        
         # Check if this is a configured design.
         if not design.isConfiguredDesign:
             ui.messageBox("Error: The current design is not configured! This script can only run on configured designs.")
@@ -28,16 +29,18 @@ def run(context):
         else:
             return
         
-        csvTargetFilePath="{}/{}.csv".format(outputFolderPath,app.activeDocument.name)
-        
-        favParams=[]
+        csvTargetFilePath="{}/{}-PARAMS.csv".format(outputFolderPath,app.activeDocument.name)
 
-        # Get fav paramaters
+        app.log("Dumping to: {}".format(csvTargetFilePath))
+        
+        # Get favourited paramaters and make headers list
+        favParams=[]
+        headersList=["partName", "partNumber", "description"]
+
         for p in design.allParameters:
             if p.isFavorite:
                 favParams.append(p.name)
-
-        rowParamValues=[]
+                headersList.append(p.name)
 
         topTable=design.configurationTopTable
 
@@ -51,34 +54,33 @@ def run(context):
             elif col.title == "Description":
                 descriptionCOLID = col.id
 
+        rowsOutputData=[]
+
         # Extract parameters
         for confRow in topTable.rows:
             app.log("Starting Row: {}".format(confRow.name))
             confRow.activate()
 
             rowFParams={}
-            rowFParams["partName"]=confRow.name
-            rowFParams["partNumber"]=confRow.getCellByColumnId(partNumberCOLID)
-            rowFParams["description"] = confRow.getCellByColumnId(descriptionCOLID)
+            rowFParams["partName"] = confRow.name
+            rowFParams["partNumber"] = confRow.getCellByColumnId(partNumberCOLID).value
+            rowFParams["description"] = confRow.getCellByColumnId(descriptionCOLID).value
 
             for pName in favParams:
-                rowFParams[pName]=design.allParameters.itemByName(pName)
+                rowFParams[pName]=adsk.fusion.Parameter.cast(design.allParameters.itemByName(pName)).value
 
-            rowParamValues.append(rowFParams)
-
-        # Add properties for use in header
-        favParams.append("partName")
-        favParams.append("partNumber")
-        favParams.append("description")
+            rowsOutputData.append(rowFParams)
 
         # Write rows to CSV file
         with open(csvTargetFilePath, 'w', newline='') as csvFile:
-            writer=csv.DictWriter(csvFile, fieldnames = favParams)
+            writer=csv.DictWriter(csvFile, fieldnames = headersList)
 
             writer.writeheader()
-            writer.writerows(rowParamValues)
+            writer.writerows(rowsOutputData)
 
-        ui.messageBox("Done! Wrote {} rows to {}".format(rowParamValues.count(), csvTargetFilePath))
+        ui.messageBox("Done! Wrote {} rows to {}".format(len(rowsOutputData), csvTargetFilePath))
+        app.log("Done")
+
     except:
         if ui:
             ui.messageBox('Failed:\n{}'.format(traceback.format_exc()))
