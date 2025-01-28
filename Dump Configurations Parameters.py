@@ -1,5 +1,5 @@
 #Author Donutnz
-#Description Dump favourited parameters for each configuration row into a CSV.
+#Description Dump parameters for each configuration row into a CSV.
 
 import adsk.core, adsk.fusion, adsk.cam, traceback
 import csv
@@ -45,8 +45,8 @@ def run(context):
         # Check if there any parameters favourited and return if not.
         if len(favParams) == 0:
             app.log("Error: No Favourited Parameters")
-            ui.messageBox("You haven't favourited any parameters. Nothing to export. Stopping.", "Error: No Favourites")
-            return  
+            ui.messageBox("You haven't favourited any parameters. Nothing to export. Stopping.", "Error: No Favourites", icon= adsk.core.MessageBoxIconTypes.WarningIconType)
+ 
 
         topTable=design.configurationTopTable
 
